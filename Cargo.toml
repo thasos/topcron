@@ -1,8 +1,25 @@
 [package]
 name = "topcron"
+description = "A Cron log parser and viewer"
+documentation = "https://git.thasmanie.fr/thasos/topcron/doc"
+repository = "https://git.thasmanie.fr/thasos/topcron"
+keywords = ["cron"]
+categories = ["command-line-utilities"]
+license = "DBAD 1.1"
+readme = "README.md"
 version = "0.1.0"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+publish = false
 
 [dependencies]
+grep = "0.2"
+grep-pcre2 = "0.1"
+clap = { version = "3.1.12", features = ["derive"] }
+regex = "1.5"
+chrono = "0.4"
+prettytable-rs = "0.8"
+textwrap = { version = "0.15", features = ["terminal_size"] }
+#unicode-width = "0.1"
+
+[dev-dependencies]
+trycmd = "0.13.3"
