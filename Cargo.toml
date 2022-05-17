@@ -23,3 +23,16 @@ textwrap = { version = "0.15", features = ["terminal_size"] }
 
 [dev-dependencies]
 trycmd = "0.13.3"
+
+[package.metadata.deb]
+maintainer = "Thasos Kanan <thasos@thasmanie.fr>"
+copyright = "2022, Thasos Kanan <thasos@thasmanie.fr>"
+license-file = ["LICENSE", "0"]
+extended-description = "A Cron log parser and viewer"
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/topcron", "usr/bin/", "755"],
+    ["README.md", "usr/share/doc/cargo-deb/README", "644"],
+]
