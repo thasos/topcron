@@ -1,0 +1,11 @@
+---
+stages:
+  - build
+
+build-job:
+  stage: build
+  image: "rust:latest"
+  script:
+    - cargo build
+  only:
+    - tags
