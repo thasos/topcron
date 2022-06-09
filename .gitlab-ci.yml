@@ -15,6 +15,13 @@ build-job:
   stage: build
   image: "rust:latest"
   script:
-    - cargo build
+    - cargo install cargo-deb
+    - cargo build --release
+    - cargo deb
+    - ls target/debian/topcron_0.1.0_amd64.deb
+  artifacts:
+    paths:
+      - target/release/topcron
+      - target/debian/topcron_0.1.0_amd64.deb
   only:
     - tags
