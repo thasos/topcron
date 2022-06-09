@@ -6,7 +6,7 @@ use chrono::prelude::*;
 use grep::cli::DecompressionReader;
 use grep::searcher::sinks::UTF8;
 use grep::searcher::Searcher;
-use prettytable::{Cell, Row, Table};
+use prettytable::{format, Cell, Row, Table};
 use regex::Regex;
 use std::process;
 // grep_pcre2 for look-around regex
@@ -220,8 +220,7 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32
             }
         }
     }
-    // TODO trier la hashmap cronjobs
-    // BTreeMap ?
+    // TODO trier la map cronjobs par date
     return Some(cronjobs);
 }
 
@@ -234,7 +233,7 @@ pub fn display_jobs(res: Vec<String>, ko_filter: bool, ok_filter: bool, verbose:
         None => (),
         Some(cronjobs) => {
             let mut table = Table::new();
-            //table.set_format(*format::consts::FORMAT_NO_BORDER_LINE_SEPARATOR);
+            table.set_format(*format::consts::FORMAT_BOX_CHARS);
             table.add_row(row![
                 b->"PID", b->"USER", b->"STATUS", b->"DATES", b->"DURATION", b->"COMMAND"
             ]);
