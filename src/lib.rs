@@ -11,7 +11,7 @@ use regex::Regex;
 use std::process;
 // grep_pcre2 for look-around regex
 use grep_pcre2::RegexMatcher;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 use std::error::Error;
 use std::io::Read;
 
@@ -126,7 +126,7 @@ fn status_filter(ko_filter: bool, ok_filter: bool, verbose: bool) {
 }
 
 // TODO retourner la ref mutable du job pour le modifier directement ?
-fn create_job_if_needed(cronjobs: &mut HashMap<i32, Cronjob>, pid: i32) {
+fn create_job_if_needed(cronjobs: &mut BTreeMap<i32, Cronjob>, pid: i32) {
     // si ce pid est déjà en mémoire, on ajoute juste des champs, sinon on le crée
     match cronjobs.get(&pid) {
         Some(_) => (),
@@ -149,7 +149,7 @@ fn create_job_if_needed(cronjobs: &mut HashMap<i32, Cronjob>, pid: i32) {
     }
 }
 
-fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<HashMap<i32, Cronjob>> {
+fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32, Cronjob>> {
     let re_cron_log = match Regex::new(
         r"^(?P<date>.*) (?P<hostname>.*) CRON\[(?P<pid>[0-9]+)\]: \((?P<user>.*)\) (?P<logtype>(CMD|END|error)) (?P<message>.*)",
     ) {
@@ -162,7 +162,7 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<HashMap<i32,
     if verbose {
         println!("DEBUG: regex pid: {:?}", re_cron_log);
     }
-    let mut cronjobs: HashMap<i32, Cronjob> = HashMap::new();
+    let mut cronjobs: BTreeMap<i32, Cronjob> = BTreeMap::new();
     let current_year = Local::now().year();
     for line in res {
         match re_cron_log.captures(&line) {
@@ -220,6 +220,8 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<HashMap<i32,
             }
         }
     }
+    // TODO trier la hashmap cronjobs
+    // BTreeMap ?
     return Some(cronjobs);
 }
 
