@@ -1,6 +1,15 @@
 ---
 stages:
+  - test
   - build
+
+test-job:
+  stage: test
+  image: "rust:latest"
+  script:
+    - cargo test
+  only:
+    - tags
 
 build-job:
   stage: build
