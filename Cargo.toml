@@ -1,8 +1,38 @@
 [package]
 name = "topcron"
-version = "0.1.0"
+description = "A Cron log parser and viewer"
+documentation = "https://gitlab.com/thasos/topcron"
+repository = "https://gitlab.com/thasos/topcron"
+keywords = ["cron"]
+categories = ["command-line-utilities"]
+license-file = "LICENSE.txt"
+readme = "README.md"
+version = "0.1.3"
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+publish = true
 
 [dependencies]
+grep = "0.2"
+grep-pcre2 = "0.1"
+clap = { version = "3.1.12", features = ["derive"] }
+regex = "1.5"
+chrono = "0.4"
+prettytable-rs = "0.8"
+textwrap = { version = "0.15", features = ["terminal_size"] }
+#unicode-width = "0.1"
+
+[dev-dependencies]
+trycmd = "0.13.3"
+
+[package.metadata.deb]
+maintainer = "Thasos Kanan <thasos@thasmanie.fr>"
+copyright = "2022, Thasos Kanan <thasos@thasmanie.fr>"
+license-file = ["LICENSE.txt", "0"]
+extended-description = "A Cron log parser and viewer"
+depends = "$auto"
+section = "utility"
+priority = "optional"
+assets = [
+    ["target/release/topcron", "usr/bin/", "755"],
+    ["README.md", "usr/share/doc/cargo-deb/README", "644"],
+]
