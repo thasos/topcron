@@ -169,54 +169,54 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32
             None => (),
             Some(matched_line) => {
                 // parse des différents champs
-                let pid = match matched_line.name("pid")?.as_str().parse() {
-                    Ok(pid) => pid,
-                    Err(error) => {
-                        // TODO ne plus sortir (exit...), print un warn avec num ligne
-                        println!("Warnig, unable to find pid in line xxx : {}", error);
-                        process::exit(1);
-                    }
-                };
-                let user = matched_line.name("user")?.as_str().to_string();
-                let hostname = matched_line.name("hostname")?.as_str().to_string();
-                let date = matched_line.name("date")?.as_str().to_string();
-                let logtype = matched_line.name("logtype")?.as_str().to_string();
-                // TODO virer le [pid] si il est dans le (et why il y est pas tout le temps ??)
-                let message = matched_line.name("message")?.as_str().to_string();
+                match matched_line.name("pid")?.as_str().parse() {
+                    Ok(pid) => {
+                        let pid = pid;
+                        let user = matched_line.name("user")?.as_str().to_string();
+                        let hostname = matched_line.name("hostname")?.as_str().to_string();
+                        let date = matched_line.name("date")?.as_str().to_string();
+                        let logtype = matched_line.name("logtype")?.as_str().to_string();
+                        // TODO virer le [pid] si il est dans le (et why il y est pas tout le temps ??)
+                        let message = matched_line.name("message")?.as_str().to_string();
 
-                // selon le type de log, on va définir le start, end, ou fail
-                create_job_if_needed(&mut cronjobs, pid);
-                match cronjobs.get_mut(&pid) {
-                    Some(job) => {
-                        match logtype.as_str() {
-                            "CMD" => {
-                                job.start_line = Some(message);
-                                job.user = Some(user);
-                                job.hostname = Some(hostname);
-                                //job.start_date = Some(date);
-                                job.start_date = parse_date(date, current_year);
-                            }
-                            "END" => {
-                                job.end_line = Some(message);
-                                job.user = Some(user);
-                                job.end_date = parse_date(date, current_year);
-                                Cronjob::set_duration(job);
-                                match job.status {
-                                    JobStatus::Failed => (),
-                                    _ => job.status = JobStatus::Ok,
+                        // selon le type de log, on va définir le start, end, ou fail
+                        create_job_if_needed(&mut cronjobs, pid);
+                        match cronjobs.get_mut(&pid) {
+                            Some(job) => {
+                                match logtype.as_str() {
+                                    "CMD" => {
+                                        job.start_line = Some(message);
+                                        job.user = Some(user);
+                                        job.hostname = Some(hostname);
+                                        //job.start_date = Some(date);
+                                        job.start_date = parse_date(date, current_year);
+                                    }
+                                    "END" => {
+                                        job.end_line = Some(message);
+                                        job.user = Some(user);
+                                        job.end_date = parse_date(date, current_year);
+                                        Cronjob::set_duration(job);
+                                        match job.status {
+                                            JobStatus::Failed => (),
+                                            _ => job.status = JobStatus::Ok,
+                                        }
+                                    }
+                                    "error" => {
+                                        job.message = Some(message);
+                                        job.end_date = parse_date(date, current_year);
+                                        job.status = JobStatus::Failed;
+                                    }
+                                    // TODO afficher fichier et numero ligne
+                                    _ => eprintln!("Some line are not CRON log."),
                                 }
                             }
-                            "error" => {
-                                job.message = Some(message);
-                                job.end_date = parse_date(date, current_year);
-                                job.status = JobStatus::Failed;
-                            }
-                            // TODO afficher fichier et numero ligne
-                            _ => eprintln!("Some line are not CRON log."),
+                            None => (),
                         }
                     }
-                    None => (),
-                }
+                    Err(_) => {
+                        println!("Warnig, unable to parse following line : {}", line);
+                    }
+                };
             }
         }
     }
