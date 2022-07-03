@@ -78,13 +78,10 @@ impl Cronjob {
         dates
     }
     fn set_duration(&mut self) {
-        match (self.start_date, self.end_date) {
-            (Some(start), Some(end)) => {
-                let duration = end - start;
-                // TODO virer num_seconds et gérer un affichage sympa ?
-                self.duration = Some(duration.num_seconds());
-            }
-            _ => (),
+        if let (Some(start), Some(end)) = (self.start_date, self.end_date) {
+            let duration = end - start;
+            // TODO virer num_seconds et gérer un affichage sympa ?
+            self.duration = Some(duration.num_seconds());
         }
     }
     fn get_duration(&self) -> String {
