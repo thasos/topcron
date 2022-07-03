@@ -34,11 +34,11 @@ pub fn create_query(filter: &str, user_filter: &str, _verbose: bool) -> String {
     // TODO attention ça marche pas bien :
     // `-F backupDataViaRsync` est OK, mais pas `-F backup`
     let mut query = String::from("^(?=.*\\bCRON\\b)");
-    if user_filter != "" {
+    if user_filter.is_empty() {
         let user_filter = format!("(?=.*\\b{}\\b)", user_filter);
         query.push_str(&user_filter);
     }
-    if filter != "" {
+    if filter.is_empty() {
         let filter = format!("(?=.*\\b{}\\b)", filter);
         query.push_str(&filter);
     }
@@ -112,7 +112,7 @@ fn parse_date(date: String, year: i32) -> Option<chrono::NaiveDateTime> {
     let date_with_year = format!("{} {}", year, date);
     let parsed = NaiveDateTime::parse_from_str(date_with_year.as_str(), "%Y %b %d %T");
     match parsed {
-        Ok(parsed) => return Some(parsed),
+        Ok(parsed) => Some(parsed),
         Err(e) => {
             println!("err {}", e);
             None
@@ -132,7 +132,7 @@ fn create_job_if_needed(cronjobs: &mut BTreeMap<i32, Cronjob>, pid: i32) {
         Some(_) => (),
         _ => {
             let job = Cronjob {
-                pid: pid,
+                pid,
                 user: None,
                 hostname: None,
                 start_date: None,
@@ -144,7 +144,6 @@ fn create_job_if_needed(cronjobs: &mut BTreeMap<i32, Cronjob>, pid: i32) {
                 duration: None,
             };
             cronjobs.insert(pid, job);
-            ()
         }
     }
 }
@@ -165,7 +164,7 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32
     let mut cronjobs: BTreeMap<i32, Cronjob> = BTreeMap::new();
     let current_year = Local::now().year();
     for line in res {
-        match re_cron_log.captures(&line) {
+        match re_cron_log.captures(line) {
             None => (),
             Some(matched_line) => {
                 // parse des différents champs
@@ -221,7 +220,7 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32
         }
     }
     // TODO trier la map cronjobs par date
-    return Some(cronjobs);
+    Some(cronjobs)
 }
 
 pub fn display_jobs(res: Vec<String>, ko_filter: bool, ok_filter: bool, verbose: bool) {
@@ -269,10 +268,9 @@ pub fn grep_file(config: Config, verbose: bool) -> Result<Vec<String>, Box<dyn E
     reader.read_to_end(&mut contents)?;
 
     // construction matcher depuis la regexp
-    let query = format!("{}", config.query);
-    let matcher = RegexMatcher::new(query.as_str())?;
+    let matcher = RegexMatcher::new(config.query.as_str())?;
     if verbose {
-        println!("DEBUG: regex query : {}", query);
+        println!("DEBUG: regex query : {}", config.query);
     }
 
     // search des matches dans contents
