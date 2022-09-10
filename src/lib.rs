@@ -177,36 +177,33 @@ fn create_cronjobs_list(res: &Vec<String>, verbose: bool) -> Option<BTreeMap<i32
 
                         // selon le type de log, on va définir le start, end, ou fail
                         create_job_if_needed(&mut cronjobs, pid);
-                        match cronjobs.get_mut(&pid) {
-                            Some(job) => {
-                                match logtype.as_str() {
-                                    "CMD" => {
-                                        job.start_line = Some(message);
-                                        job.user = Some(user);
-                                        job.hostname = Some(hostname);
-                                        //job.start_date = Some(date);
-                                        job.start_date = parse_date(date, current_year);
-                                    }
-                                    "END" => {
-                                        job.end_line = Some(message);
-                                        job.user = Some(user);
-                                        job.end_date = parse_date(date, current_year);
-                                        Cronjob::set_duration(job);
-                                        match job.status {
-                                            JobStatus::Failed => (),
-                                            _ => job.status = JobStatus::Ok,
-                                        }
-                                    }
-                                    "error" => {
-                                        job.message = Some(message);
-                                        job.end_date = parse_date(date, current_year);
-                                        job.status = JobStatus::Failed;
-                                    }
-                                    // TODO afficher fichier et numero ligne
-                                    _ => eprintln!("Some line are not CRON log."),
+                        if let Some(job) = cronjobs.get_mut(&pid) {
+                            match logtype.as_str() {
+                                "CMD" => {
+                                    job.start_line = Some(message);
+                                    job.user = Some(user);
+                                    job.hostname = Some(hostname);
+                                    //job.start_date = Some(date);
+                                    job.start_date = parse_date(date, current_year);
                                 }
+                                "END" => {
+                                    job.end_line = Some(message);
+                                    job.user = Some(user);
+                                    job.end_date = parse_date(date, current_year);
+                                    Cronjob::set_duration(job);
+                                    match job.status {
+                                        JobStatus::Failed => (),
+                                        _ => job.status = JobStatus::Ok,
+                                    }
+                                }
+                                "error" => {
+                                    job.message = Some(message);
+                                    job.end_date = parse_date(date, current_year);
+                                    job.status = JobStatus::Failed;
+                                }
+                                // TODO afficher fichier et numero ligne
+                                _ => eprintln!("Some line are not CRON log."),
                             }
-                            None => (),
                         }
                     }
                     Err(_) => {
