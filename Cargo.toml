@@ -14,7 +14,7 @@ publish = true
 [dependencies]
 grep = "0.2"
 grep-pcre2 = "0.1"
-clap = { version = "3.1.12", features = ["derive"] }
+clap = { version = "4.0.2", features = ["derive"] }
 regex = "1.5"
 chrono = "0.4"
 prettytable-rs = "0.8"
