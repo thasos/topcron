@@ -1,13 +1,13 @@
 [package]
 name = "topcron"
 description = "A Cron log parser and viewer"
-documentation = "https://gitlab.com/thasos/topcron"
-repository = "https://gitlab.com/thasos/topcron"
+documentation = "https://codeberg.org/thasos/topcron"
+repository = "https://codeberg.org/thasos/topcron"
 keywords = ["cron"]
 categories = ["command-line-utilities"]
 license-file = "LICENSE.txt"
 readme = "README.md"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 publish = true
 
