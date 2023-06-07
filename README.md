@@ -5,7 +5,7 @@ A Cron log parser and viewer, Work In Progress !
 Add the option `-L 15` to your crond daemon (for debian based distribs, see `EXTRA_OPTS` in `/etc/default/cron`), and juste run this tool.
 
 # Links
-- https://codeberg.org/thasos/topcron
+- https://github.com/thasos/topcron
 - https://crates.io/crates/topcron
 
 # Examples
